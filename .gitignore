@@ -52,7 +52,7 @@
 !**/class.ptf
 !*.tbd
 !*.sof
-!*readme
+!*readme.md
 ## tbd
 
 !*.tcl
