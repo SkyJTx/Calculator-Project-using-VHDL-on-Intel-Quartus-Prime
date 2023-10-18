@@ -19,8 +19,7 @@ architecture main of binary_multiplier is
 		check,
 		multiply
 	);
-	signal a: std_logic_vector(bit_length-1 downto 0) := in_a;
-	signal conv_a, previn_a, previn_b, intermediate_product: std_logic_vector(bit_length-1 downto 0) := (others => '0');
+	signal a, conv_a, previn_a, previn_b, intermediate_product: std_logic_vector(bit_length-1 downto 0) := (others => '0');
 	signal error, locker: std_logic := '0';
 	signal curr_state: state_type := check;
 	signal count: integer := 0;
@@ -44,6 +43,8 @@ begin
 				locker <= '0';
 				count <= 0;
 				curr_state <= check;
+				previn_a <= conv_a;
+				previn_b <= in_b;
 			end if;
 
 			previn_a <= conv_a;
@@ -51,7 +52,7 @@ begin
 
 			case curr_state is
 				when multiply =>
-					if count < abs(to_integer(signed(previn_b))) - 1 then
+					if count < abs(to_integer(signed(in_b))) - 1 then
 						if locker = '0' then
 							locker <= error;
 						end if;
@@ -60,8 +61,10 @@ begin
 						count <= count + 1;
 					end if;
 				when check =>
-					if (to_integer(signed(previn_a)) /= 0) and (to_integer(signed(previn_b)) /= 0) then
+					if (to_integer(signed(conv_a)) /= 0) and (to_integer(signed(in_b)) /= 0) then
 						curr_state <= multiply;
+					else
+						a <= (others => '0');
 					end if;
 			end case;
 
@@ -74,7 +77,7 @@ begin
 		)
 		port map(
 			in_a => a,
-			in_b => previn_a,
+			in_b => conv_a,
 			subtract => '0',
 			out_sum => intermediate_product,
 			out_error => error
