@@ -20,7 +20,7 @@ architecture main of binary_divider is
 		divide
 	);
 	signal a: std_logic_vector(bit_length-1 downto 0) := in_a;
-	signal conv_a, conv_b, previn_a, start_quotient, start_remainder, previn_b, intermediate_quotient: std_logic_vector(bit_length-1 downto 0) := (others => '0');
+	signal rem_a, conv_a, conv_b, previn_a, start_quotient, start_remainder, previn_b, intermediate_quotient: std_logic_vector(bit_length-1 downto 0) := (others => '0');
 	signal curr_state: state_type := check;
 	signal error, locker: std_logic := '0';
 	signal count, is_positive: integer := 0;
@@ -111,7 +111,7 @@ begin
 			subtract => in_a(bit_length-1) xor in_b(bit_length-1),
 			out_sum => out_quotient
 		);
-	remainder_convert: entity work.binary_adder_and_subtractor(main)
+	remainder_corrector: entity work.binary_adder_and_subtractor(main)
 		generic map(
 			bit_length => bit_length
 		)
@@ -119,6 +119,16 @@ begin
 			in_a => start_remainder,
 			in_b => a,
 			subtract => '0',
+			out_sum => rem_a
+		);
+	remainder_converter: entity work.binary_adder_and_subtractor(main)
+		generic map(
+			bit_length => bit_length
+		)
+		port map(
+			in_a => (others => '0'),
+			in_b => rem_a,
+			subtract => in_b(bit_length-1),
 			out_sum => out_remainder
 		);
 	out_error <= locker;

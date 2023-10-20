@@ -35,7 +35,17 @@ begin
 			subtract => in_b(bit_length-1),
 			out_sum => conv_a
 		);
-	
+	binary_adder: entity work.binary_adder_and_subtractor(main)
+		generic map(
+			bit_length => bit_length
+		)
+		port map(
+			in_a => a,
+			in_b => conv_a,
+			subtract => '0',
+			out_sum => intermediate_product,
+			out_error => error
+		);
 	process(clock) begin
 		if rising_edge(clock) then
 			if conv_a /= previn_a or in_b /= previn_b then
@@ -70,18 +80,6 @@ begin
 
 		end if;
 	end process;
-
-	binary_adder: entity work.binary_adder_and_subtractor(main)
-		generic map(
-			bit_length => bit_length
-		)
-		port map(
-			in_a => a,
-			in_b => conv_a,
-			subtract => '0',
-			out_sum => intermediate_product,
-			out_error => error
-		);
 
 	out_product <= a;
 	out_error <= locker;
