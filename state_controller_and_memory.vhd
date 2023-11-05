@@ -51,7 +51,7 @@ begin
 				curr_operand2 <= SWs(bit_length-1 downto 0);
 			elsif curr_state = oprt then
 				out_state <= "01";
-				curr_operator <= SWs(1 downto 0);
+				curr_operator <= not SWs(1 downto 0);
 			elsif curr_state = rslt then
 				out_state <= "10";
 				curr_done <= '1';
